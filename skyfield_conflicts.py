@@ -4,14 +4,14 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.patches import Patch
 import json 
-from datetime import datetime
+from datetime import datetime, timezone
 
 #                  [NPP, NOAA20, NOAA21, MET-B, MET-C, AQUA, MET-SGA1, GCOM-W1, AWS]
 TARGET_NORAD_IDS = {37849, 43013, 54234, 38771, 43689, 27424, 65159, 38337, 60543}
 
-tle_url = "https://proto.gina.alaska.edu/distro/tle/weather.txt"
+tle_url = "https://proto.gina.alaska.edu/distro/tle/active.txt"
 try:
-    satellites = load.tle_file(tle_url, filename="weather_tle.txt", reload=True)
+    satellites = load.tle_file(tle_url, filename="active_tle.txt", reload=True)
     satellites = [sat for sat in satellites if sat.model.satnum in TARGET_NORAD_IDS]
     print(f"Loaded {len(satellites)} satellites from GINA TLE feed.")
 except Exception as e:
@@ -98,7 +98,9 @@ for station_name in df_passes['station'].unique():
 
     fig, axes = plt.subplots(nrows=4, ncols=1, figsize=(16, 9), sharex=False, sharey=True)
 
-    sats = sorted(st_passes['sat'].unique())
+    cus_order = ['NOAA 21 (JPSS-2)', 'NOAA 20 (JPSS-1)', 'SUOMI NPP', 'METOP-SGA1', 'METOP-C', 'METOP-B', 'ARCTIC WEATHER SATELLITE', 'GCOM-W1 (SHIZUKU)', 'AQUA']
+    sats = [sat for sat in cus_order if sat in st_passes['sat'].unique()]
+    sats = sats[::-1]
     sat_y = {sat: i for i, sat in enumerate(sats)}
 
     for i, day in enumerate(dates):
@@ -146,5 +148,5 @@ for station_name in df_passes['station'].unique():
     print(f"Saved schedule plot: {filename}")
     plt.close()
 
-with open('/home/processing/gits/schedule/forward_plots/schedule/timestamp.json', 'w') as f:
-    json.dump({'timestamp': datetime.utcnow().isoformat() + 'Z'}, f)
+with open('timestamp.json', 'w') as f:
+    json.dump({'timestamp': datetime.now(timezone.utc).isoformat()}, f)
