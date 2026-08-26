@@ -3,6 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.patches import Patch
+import json 
+from datetime import datetime
 
 #                  [NPP, NOAA20, NOAA21, MET-B, MET-C, AQUA, MET-SGA1, GCOM-W1, AWS]
 TARGET_NORAD_IDS = {37849, 43013, 54234, 38771, 43689, 27424, 65159, 38337, 60543}
@@ -131,11 +133,11 @@ for station_name in df_passes['station'].unique():
         ax.set_xlim(day_start, day_end)
         ax.grid(True, axis='x', linestyle='--', alpha=0.4)
 
-    plt.suptitle(f"4-Day Operational Schedule: 3+ Satellite Contention - Station: {station_name.upper()}", fontsize=13, fontweight='bold', y=0.995)
+    plt.suptitle(f"4-Day Passes/Conflicts - Station: {station_name.upper()}", fontsize=13, fontweight='bold', y=0.995)
 
     fig.legend(handles=[
-        Patch(facecolor='#2ca02c', label='Normal / 2-Sat Overlap'),
-        Patch(facecolor='#d62728', label='3+ Satellite Overlap (High Contention)')
+        Patch(facecolor='#2ca02c', label='No Conflicts'),
+        Patch(facecolor='#d62728', label='2+ Satellite Overlap')
     ], loc='upper right', bbox_to_anchor=(0.99, 0.995), fontsize=9)
 
     plt.tight_layout(rect=[0, 0, 1, 0.98])
@@ -143,3 +145,6 @@ for station_name in df_passes['station'].unique():
     plt.savefig(filename, dpi=300)
     print(f"Saved schedule plot: {filename}")
     plt.close()
+
+with open('/home/processing/gits/schedule/forward_plots/schedule/timestamp.json', 'w') as f:
+    json.dump({'timestamp': datetime.utcnow().isoformat() + 'Z'}, f)
