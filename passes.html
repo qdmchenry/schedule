@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Passes</title>
+    <title>Schedule</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -101,7 +101,9 @@
  
         async function getTimestampFromFile() {
             try {
-                const response = await fetch(TIMESTAMP_FILE);
+                const response = await fetch(TIMESTAMP_FILE, {
+                    cache: 'no-store'
+                });
                 if (response.ok) {
                     const data = await response.json();
                     return new Date(data.timestamp);

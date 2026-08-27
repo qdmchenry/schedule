@@ -149,4 +149,4 @@ for station_name in df_passes['station'].unique():
     plt.close()
 
 with open('timestamp.json', 'w') as f:
-    json.dump({'timestamp': datetime.now(timezone.utc).isoformat()}, f)
+    json.dump({'timestamp': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')}, f)
